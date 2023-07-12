@@ -1,5 +1,6 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { UpdateConvertedValue, UpdateTypedText } from './converter.actions';
+import { Injectable } from '@angular/core';
 
 export interface InputStateModel {
     typedText: string;
@@ -13,6 +14,8 @@ export interface InputStateModel {
         convertedValue: 'Text'
     }
 })
+
+@Injectable()
 export class ConverterState {
     @Action(UpdateTypedText)
     updateTypedText(ctx: StateContext<InputStateModel>, action: UpdateTypedText): void {
