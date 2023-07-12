@@ -1,6 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ConverterService } from './converter.service';
+import { Store } from '@ngxs/store';
+import { Observable, Subscription } from 'rxjs';
+import { UpdateConvertedValue, UpdateTypedText } from './state';
+import { ConverterSelectors } from './state/converter.selectors';
 
 @Component({
     selector: 'app-converter',
@@ -8,18 +12,29 @@ import { ConverterService } from './converter.service';
     styleUrls: ['./converter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ConverterComponent implements OnInit {
+export class ConverterComponent implements OnInit, OnDestroy {
     converterForm: FormGroup;
     buttonKeys: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '#', '0', '<-'];
 
+    typedText$: Observable<string>;
+    convertedValue$: Observable<string>;
+    private _subscriptions: Subscription[] = [];
+
     constructor(
         private _formBuilder: FormBuilder,
-        private _converterService: ConverterService
+        private _converterService: ConverterService,
+        private _store: Store
     ) {
         this.converterForm = this._formBuilder.group({
-            typedValue: ['Integer'],
-            resultValue: ['Text']
+            typedValue: '',
+            convertedValue: ''
         });
+
+        this.typedText$ = this._store.select(ConverterSelectors.getTypedText);
+        this.convertedValue$ = this._store.select(ConverterSelectors.getConvertedValue);
+
+        this.typedText$.subscribe((typedText: string) => this.converterForm.patchValue({ typedValue: typedText }));
+        this.convertedValue$.subscribe((convertedValue: string) => this.converterForm.patchValue({ convertedValue }));
     }
 
     ngOnInit(): void {
@@ -39,6 +54,7 @@ export class ConverterComponent implements OnInit {
             const defaultValue = 'Integer';
             const updatedTypedValue = typedValueControl.value.replace(defaultValue, '') + keypadInput;
             typedValueControl.setValue(updatedTypedValue);
+            this._store.dispatch(new UpdateTypedText(updatedTypedValue));
         }
     }
 
@@ -59,24 +75,23 @@ export class ConverterComponent implements OnInit {
     }
 
     /**
-     * Subscribes to changes in the typed value and updates the result value accordingly.
+     * Subscribes to changes in the typed value and updates the converted value accordingly.
      * Converts the typed value to alphabet using the ConverterService.
      */
     private _subscribeToTypedValueChanges(): void {
         const typedValueControl = this.converterForm.get('typedValue');
-        const resultValueControl = this.converterForm.get('resultValue');
+        const convertedValueControl = this.converterForm.get('convertedValue');
 
-        if (!typedValueControl || !resultValueControl) return;
+        if (!typedValueControl || !convertedValueControl) return;
 
         typedValueControl.valueChanges.subscribe((value: string) => {
-
             console.log('You typed', typedValueControl?.value);
 
             if (value.endsWith('#')) return;
 
             if (!value) {
                 typedValueControl.setValue('Integer');
-                resultValueControl.setValue('Text');
+                convertedValueControl.setValue('Text');
                 return;
             }
 
@@ -84,7 +99,14 @@ export class ConverterComponent implements OnInit {
             const numbers = value.split('#').map(Number);
             const convertedValue = this._converterService.convertToAlphabet(numbers);
 
-            resultValueControl.setValue(convertedValue);
+            convertedValueControl.setValue(convertedValue);
+            this._store.dispatch(new UpdateConvertedValue(convertedValue));
+        });
+    }
+
+    ngOnDestroy(): void {
+        this._subscriptions.forEach((subscription: Subscription) => {
+            subscription.unsubscribe();
         });
     }
 }

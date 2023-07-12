@@ -7,10 +7,11 @@ import { NgxsModule } from '@ngxs/store';
 import { KeypadButtonComponent } from './converter/keypad-button/keypad-button.component';
 import { ConverterComponent } from './converter/converter.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ConverterState } from './converter/state/converter.state';
 
 @NgModule({
     declarations: [AppComponent, ConverterComponent, KeypadButtonComponent],
-    imports: [BrowserModule, ReactiveFormsModule, NgxsModule.forRoot([]), AppRoutingModule],
+    imports: [BrowserModule, ReactiveFormsModule, NgxsModule.forRoot([ConverterState]), AppRoutingModule],
     providers: [],
     bootstrap: [AppComponent]
 })
