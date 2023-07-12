@@ -1,6 +1,6 @@
 {
   "name": "number-to-string-converter-app",
-  "version": "0.0.1-beta",
+  "version": "0.0.1-1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -52,5 +52,29 @@
     "prettier": "^3.0.0",
     "ts-jest": "^29.1.1",
     "typescript": "~4.7.2"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "printWidth": 160,
+    "semi": true,
+    "tabWidth": 4,
+    "trailingComma": "none",
+    "arrowParens": "always",
+    "overrides": [
+      {
+        "files": "*.json",
+        "options": {
+          "parser": "json",
+          "singleQuote": false
+        }
+      },
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
   }
 }
