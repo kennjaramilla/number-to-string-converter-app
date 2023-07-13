@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "npm run node:ng serve -- --",
     "build": "ng build",
     "node:size": "cross-env node --max-old-space-size=16384",
     "node:ng": "npm run node:size node_modules/@angular/cli/bin/ng",
