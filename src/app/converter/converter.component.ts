@@ -62,6 +62,9 @@ export class ConverterComponent implements OnInit, OnDestroy {
 
         const defaultValue = 'Integer';
         const updatedTypedValue = typedValueControl.value.replace(defaultValue, '') + keypadInput;
+
+        console.log('You typed', keypadInput);
+
         typedValueControl.setValue(updatedTypedValue);
         this._store.dispatch(new UpdateTypedText(updatedTypedValue));
     }
@@ -100,8 +103,6 @@ export class ConverterComponent implements OnInit, OnDestroy {
                 convertedValueControl.setValue('Text');
                 return;
             }
-
-            console.log('You typed', value);
 
             // Split the string by '#' and map each resulting string to a number
             const numbers = value.split('#').map(Number);
