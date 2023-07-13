@@ -32,8 +32,10 @@ export class ConverterComponent implements OnInit, OnDestroy {
         this.typedText$ = this._store.select(ConverterState.getTypedText);
         this.convertedValue$ = this._store.select(ConverterState.getConvertedValue);
 
-        this.typedText$.subscribe((typedText: string) => this.converterForm.patchValue({ typedValue: typedText }));
-        this.convertedValue$.subscribe((convertedValue: string) => this.converterForm.patchValue({ convertedValue }));
+        this._subscriptions.push(
+            this.typedText$.subscribe((typedText: string) => this.converterForm.patchValue({ typedValue: typedText })),
+            this.convertedValue$.subscribe((convertedValue: string) => this.converterForm.patchValue({ convertedValue }))
+        );
     }
 
     ngOnInit(): void {
