@@ -10,7 +10,6 @@ import { ConverterForm } from '../converter-form.interface';
 })
 export class KeypadButtonComponent {
     @Input() buttonLabel: string = '';
-    @Input() converterForm!: FormGroup<ConverterForm>;
     @Output() buttonClick: EventEmitter<void> = new EventEmitter<void>();
 
     onButtonClick(): void {

@@ -14,9 +14,18 @@ export interface InputStateModel {
         convertedValue: 'Text'
     }
 })
-
 @Injectable()
 export class ConverterState {
+    @Selector([ConverterState])
+    static getTypedText({ typedText }: InputStateModel): string {
+        return typedText;
+    }
+
+    @Selector([ConverterState])
+    static getConvertedValue({ convertedValue }: InputStateModel): string {
+        return convertedValue;
+    }
+
     @Action(UpdateTypedText)
     updateTypedText(ctx: StateContext<InputStateModel>, action: UpdateTypedText): void {
         const state = ctx.getState();

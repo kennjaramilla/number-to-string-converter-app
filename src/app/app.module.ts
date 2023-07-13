@@ -7,7 +7,7 @@ import { NgxsModule } from '@ngxs/store';
 import { KeypadButtonComponent } from './converter/keypad-button/keypad-button.component';
 import { ConverterComponent } from './converter/converter.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ConverterState } from './converter/state/converter.state';
+import { ConverterState } from './converter/state';
 
 @NgModule({
     declarations: [AppComponent, ConverterComponent, KeypadButtonComponent],

@@ -1,6 +1,6 @@
 {
   "name": "number-to-string-converter-app",
-  "version": "0.0.1-1",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -10,6 +10,7 @@
     "prettier": "prettier --write \"src/**/*.{scss,ts,json,html}\"",
     "watch": "ng build --watch --configuration development",
     "test": "npm run node:ng test",
+    "test:no-watch": "ng test --browsers ChromeHeadless --no-watch --code-coverage",
     "test:visual": "ng test:ng -- -- -- --browsers=Chrome --watch",
     "lint": "eslint . --ext .ts --fix"
   },

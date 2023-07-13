@@ -1,11 +1,10 @@
 <div class="converter-container">
     <form [formGroup]="converterForm" class="converter-container-form">
-        <input type="text" formControlName="typedValue" />
+        <input type="text" formControlName="typedValue" readonly />
         <input type="text" formControlName="convertedValue" readonly />
         <div class="converter-buttons">
             <div *ngFor="let button of buttonKeys; let last = last" class="button">
-                <app-keypad-button [buttonLabel]="button" (buttonClick)="last ? clearInput() : appendNumber(button)" [converterForm]="converterForm">
-                </app-keypad-button>
+                <app-keypad-button [buttonLabel]="button" (buttonClick)="last ? clearInput() : appendNumber(button)"> </app-keypad-button>
             </div>
         </div>
     </form>

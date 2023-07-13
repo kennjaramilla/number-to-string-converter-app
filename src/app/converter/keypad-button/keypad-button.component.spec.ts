@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { KeypadButtonComponent } from './keypad-button.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('KeypadButtonComponent', () => {
     let component: KeypadButtonComponent;
@@ -8,7 +9,8 @@ describe('KeypadButtonComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [KeypadButtonComponent]
+            declarations: [KeypadButtonComponent],
+            schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();
 
         fixture = TestBed.createComponent(KeypadButtonComponent);
@@ -18,5 +20,15 @@ describe('KeypadButtonComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    describe('onButtonClick', () => {
+        it('should emit buttonClick event', () => {
+            spyOn(component.buttonClick, 'emit');
+
+            component.onButtonClick();
+
+            expect(component.buttonClick.emit).toHaveBeenCalled();
+        });
     });
 });

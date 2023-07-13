@@ -3,8 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ConverterService } from './converter.service';
 import { Store } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
-import { UpdateConvertedValue, UpdateTypedText } from './state';
-import { ConverterSelectors } from './state/converter.selectors';
+import { ConverterState, UpdateConvertedValue, UpdateTypedText } from './state';
 
 @Component({
     selector: 'app-converter',
@@ -30,8 +29,8 @@ export class ConverterComponent implements OnInit, OnDestroy {
             convertedValue: ''
         });
 
-        this.typedText$ = this._store.select(ConverterSelectors.getTypedText);
-        this.convertedValue$ = this._store.select(ConverterSelectors.getConvertedValue);
+        this.typedText$ = this._store.select(ConverterState.getTypedText);
+        this.convertedValue$ = this._store.select(ConverterState.getConvertedValue);
 
         this.typedText$.subscribe((typedText: string) => this.converterForm.patchValue({ typedValue: typedText }));
         this.convertedValue$.subscribe((convertedValue: string) => this.converterForm.patchValue({ convertedValue }));
@@ -50,12 +49,19 @@ export class ConverterComponent implements OnInit, OnDestroy {
     appendNumber(keypadInput: string): void {
         const typedValueControl = this.converterForm.get('typedValue');
 
-        if (typedValueControl) {
-            const defaultValue = 'Integer';
-            const updatedTypedValue = typedValueControl.value.replace(defaultValue, '') + keypadInput;
-            typedValueControl.setValue(updatedTypedValue);
-            this._store.dispatch(new UpdateTypedText(updatedTypedValue));
+        if (!typedValueControl) return;
+
+        const currentValue = typedValueControl.value;
+
+        // Check if the typedValue already ends with "#"
+        if (currentValue.endsWith('#') && keypadInput === '#') {
+            return;
         }
+
+        const defaultValue = 'Integer';
+        const updatedTypedValue = typedValueControl.value.replace(defaultValue, '') + keypadInput;
+        typedValueControl.setValue(updatedTypedValue);
+        this._store.dispatch(new UpdateTypedText(updatedTypedValue));
     }
 
     /**
@@ -85,8 +91,6 @@ export class ConverterComponent implements OnInit, OnDestroy {
         if (!typedValueControl || !convertedValueControl) return;
 
         typedValueControl.valueChanges.subscribe((value: string) => {
-            console.log('You typed', typedValueControl?.value);
-
             if (value.endsWith('#')) return;
 
             if (!value) {
@@ -94,6 +98,8 @@ export class ConverterComponent implements OnInit, OnDestroy {
                 convertedValueControl.setValue('Text');
                 return;
             }
+
+            console.log('You typed', value);
 
             // Split the string by '#' and map each resulting string to a number
             const numbers = value.split('#').map(Number);
