@@ -10,8 +10,14 @@ export class ConverterService {
      * @param {number[]} numbers - The array of numbers to be converted.
      * @returns {string} The converted string of uppercase letters.
      */
-    convertToAlphabet(numbers: number[]): string {
+    convertToAlphabet(numberStringInput: string): string {
         const letterLength = 26;
+        const numbers = this._convertToNumberArray(numberStringInput);
         return numbers.map((number) => String.fromCharCode(65 + (number % letterLength))).join('');
+    }
+
+    // Split the string by '#' and map each resulting string to a number
+    private _convertToNumberArray(numberInputs: string): number[] {
+        return numberInputs.split('#').map(Number);
     }
 }

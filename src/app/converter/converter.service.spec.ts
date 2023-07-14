@@ -11,10 +11,10 @@ describe('ConverterService', () => {
 
     describe('convertToAlphabet', () => {
         it('should convert numbers to alphabet letters', () => {
-            const numbers = [0, 1, 2, 26, 27, 52];
+            const numberStringInput = '0#1#2#26#27#52';
             const expectedOutput = 'ABCABA';
 
-            const result = service.convertToAlphabet(numbers);
+            const result = service.convertToAlphabet(numberStringInput);
 
             expect(result).toEqual(expectedOutput);
         });

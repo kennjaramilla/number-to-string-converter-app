@@ -56,7 +56,7 @@ describe('ConverterComponent', () => {
             expect(typedValueControl.value).toBe('0#2');
             expect(convertedValueControl.value).toBe('BA');
             expect(storeMock.dispatch).toHaveBeenCalledWith(jasmine.any(UpdateConvertedValue));
-            expect(converterServiceMock.convertToAlphabet).toHaveBeenCalledWith([0, 2]);
+            expect(converterServiceMock.convertToAlphabet).toHaveBeenCalledWith('0#2');
         });
 
         it('should handle typed value ending with #', () => {

@@ -105,9 +105,7 @@ export class ConverterComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            // Split the string by '#' and map each resulting string to a number
-            const numbers = value.split('#').map(Number);
-            const convertedValue = this._converterService.convertToAlphabet(numbers);
+            const convertedValue = this._converterService.convertToAlphabet(value);
 
             convertedValueControl.setValue(convertedValue);
             this._store.dispatch(new UpdateConvertedValue(convertedValue));
