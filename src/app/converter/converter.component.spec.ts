@@ -5,7 +5,7 @@ import { FormBuilder, FormControl } from '@angular/forms';
 import { NgxsModule } from '@ngxs/store';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { UpdateConvertedValue, UpdateTypedText } from './state';
-import { Subscription, of } from 'rxjs';
+import { Subject, Subscription, of } from 'rxjs';
 
 describe('ConverterComponent', () => {
     let component: ConverterComponent;
@@ -69,6 +69,73 @@ describe('ConverterComponent', () => {
             expect(convertedValueControl.value).toBe(null);
             expect(storeMock.dispatch).not.toHaveBeenCalled();
         });
+
+        it('should return early if typedValueControl or convertedValueControl is null', () => {
+            spyOn(component.converterForm, 'get').and.returnValue(null);
+
+            component.ngOnInit();
+
+            expect(component['_store'].dispatch).not.toHaveBeenCalled();
+            expect(component.converterForm.get).toHaveBeenCalledWith('typedValue');
+            expect(component.converterForm.get).toHaveBeenCalledWith('convertedValue');
+        });
+
+        it('should set default values if value is empty', () => {
+            const typedValueControl = jasmine.createSpyObj('FormControl', ['setValue']);
+            const convertedValueControl = jasmine.createSpyObj('FormControl', ['setValue']);
+
+            const converterFormSpy = jasmine.createSpyObj('FormGroup', [], {
+                get: (key: string) => {
+                    if (key === 'typedValue') {
+                        return typedValueControl;
+                    } else if (key === 'convertedValue') {
+                        return convertedValueControl;
+                    }
+                }
+            });
+
+            const valueChangesSubject = new Subject<string>();
+            typedValueControl.valueChanges = valueChangesSubject.asObservable();
+
+            typedValueControl.setValue('');
+
+            component.converterForm = converterFormSpy;
+            component.ngOnInit();
+
+            valueChangesSubject.next(''); // Emit value to trigger subscription
+
+            expect(typedValueControl.setValue).toHaveBeenCalledWith('Integer');
+            expect(convertedValueControl.setValue).toHaveBeenCalledWith('Text');
+            expect(component['_store'].dispatch).not.toHaveBeenCalled(); // No action dispatched
+        });
+
+        it('should return early if value ends with "#"', () => {
+            const typedValueControl = jasmine.createSpyObj('FormControl', ['setValue']);
+            const convertedValueControl = jasmine.createSpyObj('FormControl', ['setValue']);
+
+            const value = '123#';
+
+            const converterFormSpy = jasmine.createSpyObj('FormGroup', [], {
+                get: (key: string) => {
+                    if (key === 'typedValue') {
+                        return typedValueControl;
+                    } else if (key === 'convertedValue') {
+                        return convertedValueControl;
+                    }
+                }
+            });
+
+            const valueChangesSubject = new Subject<string>();
+            typedValueControl.valueChanges = valueChangesSubject.asObservable();
+
+            component.converterForm = converterFormSpy;
+            component.ngOnInit();
+
+            valueChangesSubject.next('#'); // Emit value to trigger subscription
+
+            expect(typedValueControl.setValue).not.toHaveBeenCalled();
+            expect(convertedValueControl.setValue).not.toHaveBeenCalled();
+        });
     });
 
     describe('appendNumber', () => {
@@ -82,6 +149,25 @@ describe('ConverterComponent', () => {
 
             expect(typedValueControl?.value).toBe(`${defaultValue.replace(defaultValue, '')}${keypadInput}`);
             expect(component['_store'].dispatch).toHaveBeenCalledWith(new UpdateTypedText(`${defaultValue.replace(defaultValue, '')}${keypadInput}`));
+        });
+
+        it('should not dispatch an action if keypadInput has two consecutive #', () => {
+            const keypadInput = '#';
+            const currentValue = '1#';
+            const typedValueControl = component.converterForm.get('typedValue');
+            typedValueControl?.setValue(currentValue);
+
+            component.appendNumber(keypadInput);
+
+            expect(component['_store'].dispatch).not.toHaveBeenCalled();
+        });
+
+        it('should return early if typedValueControl is null', () => {
+            spyOn(component.converterForm, 'get').and.returnValue(null);
+
+            component.appendNumber('#');
+
+            expect(component['_store'].dispatch).not.toHaveBeenCalled();
         });
     });
 
