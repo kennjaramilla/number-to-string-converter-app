@@ -4,6 +4,7 @@ import { ConverterService } from './converter.service';
 import { Store } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { ConverterState, UpdateConvertedValue, UpdateTypedText } from './state';
+import { ConverterForm } from './converter-form.interface';
 
 @Component({
     selector: 'app-converter',
@@ -12,7 +13,7 @@ import { ConverterState, UpdateConvertedValue, UpdateTypedText } from './state';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConverterComponent implements OnInit, OnDestroy {
-    converterForm: FormGroup;
+    converterForm: FormGroup<ConverterForm>;
     buttonKeys: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '#', '0', '<-'];
 
     typedText$: Observable<string>;
@@ -27,7 +28,7 @@ export class ConverterComponent implements OnInit, OnDestroy {
         this.converterForm = this._formBuilder.group({
             typedValue: '',
             convertedValue: ''
-        });
+        }) as FormGroup<ConverterForm>;
 
         this.typedText$ = this._store.select(ConverterState.getTypedText);
         this.convertedValue$ = this._store.select(ConverterState.getConvertedValue);
